@@ -7,6 +7,8 @@ namespace WinForms.Windows
 {
     public partial class Form_Client : Form
     {
+        public ClientObject client;
+
         public Form_Client()
         {
             InitializeComponent();
@@ -17,25 +19,29 @@ namespace WinForms.Windows
         public int progress
         {
             get => pbar.Value;
-            set => pbar.Invoke(new Delegate((s) => pbar.Value = (int)value), "newText");
+            set => pbar?.Invoke(new Delegate((s) => pbar.Value = (int)value), "newText");
         }
 
-        public string Error
+        public string ErrorText
         {
             get => lblError.Text;
-            set => lblError.Invoke(new Delegate((s) => lblError.Text = (string)value), "newText");
+            set => lblError?.Invoke(new Delegate((s) => lblError.Text = (string)value), "newText");
         }
-        
+        public Color ErrorColor
+        {
+            set => lblError?.Invoke(new Delegate((s) => lblError.ForeColor = value), "newText");
+        }
+
         public string Status
         {
             get => lblStatusUI.Text;
             set
             {
-                lblStatusUI.Invoke(new Delegate((s) => lblStatusUI.Text = (string)value), "newText");
+                lblStatusUI?.Invoke(new Delegate((s) => lblStatusUI.Text = (string)value), "newText");
                 if (lblStatusUI.Text == "Connected")
-                    lblStatusUI.Invoke(new Delegate((s) => lblStatusUI.ForeColor = Color.Green), "newText");
+                    lblStatusUI?.Invoke(new Delegate((s) => lblStatusUI.ForeColor = Color.Green), "newText");
                 else
-                    lblStatusUI.Invoke(new Delegate((s) => lblStatusUI.ForeColor = Color.Red), "newText");
+                    lblStatusUI?.Invoke(new Delegate((s) => lblStatusUI.ForeColor = Color.Red), "newText");
             }
         }
 
@@ -44,16 +50,38 @@ namespace WinForms.Windows
             get => cmbbxName.Text;
         }
 
-        private void Form_Client_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
-            formEnter.Show();
-        }
-
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            ClientObject client = new ClientObject(this);
-            client.Connect();
+            // Проверка непустого имени
+            if (string.IsNullOrEmpty(cmbbxName.Text))
+            {
+                this.ErrorText = "Ошибка: Не выбрано имя.";
+                this.ErrorColor = Color.Red;
+                return;
+            }
+            // Первое подключение
+            if (client == null)
+            {
+                client = new ClientObject(this);
+                client.Connect();
+            }
+            // Блокировка повторного подключения
+            if (client?.client.Connected == true)
+                return;
+            // Подключение при разрыве
+            else
+                client.Connect();
+        }
+
+        private void Form_Client_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (client != null)
+            {
+                client.Disconnect();
+                client.form = null;
+            }
+            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
+            formEnter.Show();
         }
     }
 }

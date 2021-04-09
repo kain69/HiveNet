@@ -6,25 +6,27 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WinForms.Windows;
+using System.Drawing;
 
 namespace WinForms.Client
 {
     public class ClientObject
     {
+        public bool IsConnect { get; private set; } = false;
         public string userName { get; set; }
         // Порт
         private const int port = 8005;
         public int Port { get { return port; } }
         // Адресс
-        private const string address = "62.16.41.195";
+        private const string address = "127.0.0.1";
         public string Address { get { return address; } }
 
         // Поток сообщений и TCP Client
-        TcpClient client;
+        public TcpClient client { get; private set; }
         NetworkStream stream;
 
         // Форма
-        Form_Client form;
+        public Form_Client form { get; set; }
 
         public ClientObject(Form_Client form)
         {
@@ -35,9 +37,9 @@ namespace WinForms.Client
 
         public void Connect()
         {
-            
             try
             {
+                var t = client.Connected;
                 client.Connect(address, port); //подключение клиента
                 stream = client.GetStream(); // получаем поток
 
@@ -50,10 +52,14 @@ namespace WinForms.Client
                 // запускаем новый поток для получения данных
                 Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
                 receiveThread.Start(); //старт потока
+
+                form.ErrorText = "Хорошо!";
+                form.ErrorColor = Color.Green;
             }
             catch (Exception ex)
             {
-                form.Error = ex.Message;
+                form.ErrorText = ex.Message;
+                form.ErrorColor = Color.Red;
                 //throw new Exception(ex.Message);
             }
         }
@@ -73,6 +79,8 @@ namespace WinForms.Client
                 string message = null;
                 try
                 {
+                    if (!client.Connected)
+                        throw new Exception("Ошибка: подключение прервано");
                     byte[] data = new byte[64]; // буфер для получаемых данных
                     StringBuilder builder = new StringBuilder();
                     int bytes = 0;
@@ -84,12 +92,19 @@ namespace WinForms.Client
                     while (stream.DataAvailable);
 
                     message = builder.ToString();
+
+                    form.ErrorText = "Хорошо!";
+                    form.ErrorColor = Color.Green;
                 }
-                catch (Exception ex)
+                catch
                 {
-                    form.Error = "Ошибка: подключение прервано";
+                    if (form != null)
+                    {
+                        form.ErrorText = "Ошибка: подключение прервано";
+                        form.ErrorColor = Color.Red;
+                    }
                     Disconnect();
-                    throw new Exception(ex.Message);
+                    break;
                 }
                 if (message == "Start")
                 {
@@ -98,12 +113,16 @@ namespace WinForms.Client
             }
         }
 
-        void Disconnect()
+        public void Disconnect()
         {
             if (stream != null)
                 stream.Close();//отключение потока
             if (client != null)
+            {
+                
                 client.Close();//отключение клиента
+            }
+
         }
 
         void Working()
