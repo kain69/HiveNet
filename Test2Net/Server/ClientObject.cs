@@ -65,21 +65,22 @@ namespace WinForms.Server
                     
                         Thread.Sleep(1000);
 
-                        try
-                        {
-                            message = GetMessage();
-                            if (message == "Complete")
-                                break;
-                        }
-                        catch (Exception ex)
-                        {
-                            form.Status = ex.Message;
-                            //throw new Exception(ex.Message);
-                        }
-
                         value += 10;
                         if (value >= 90)
+                        {
                             value = 90;
+                            try
+                            {
+                                message = GetMessage();
+                                if (message == "Complete")
+                                    break;
+                            }
+                            catch (Exception ex)
+                            {
+                                form.Status = ex.Message;
+                                //throw new Exception(ex.Message);
+                            }
+                        }
                         form.Pbars(Id, value);
                     }
                     form.Pbars(Id, 100);

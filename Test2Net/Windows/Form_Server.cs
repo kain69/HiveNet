@@ -13,9 +13,7 @@ using WinForms.Server;
 //TODO: Сделать блокировку смены имени, если подключен
 //TODO: Сделать возможность отключения станка из диспетчера
 //TODO: Сделать динамическое создание форм станков
-//TODO: Добавить картинки на стартовое окно
 //TODO: Добавить статус у каждого станка
-//TODO: Подчищать все хвосты при выходе на стартовое окно
 //TODO: Сделать catch для отдельных ошибок
 //TODO: Сделать отдельный поток для чтения
 
@@ -58,12 +56,6 @@ namespace WinForms.Windows
         public void Pbars(int id, int value)
         {
             pbars[id].Invoke(new Delegate((s) => pbars[id].Value = value), "newText");
-        }
-
-        private void Form_Server_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
-            formEnter.Show();
         }
 
         private void btnServStart_Click(object sender, EventArgs e)
@@ -117,6 +109,19 @@ namespace WinForms.Windows
         {
             if (server.clients.Count >= 4)
                 server.clients[3].IsStarted = true;
+        }
+
+        private void Form_Server_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (server != null)
+            {
+                server.Disconnect();
+                listenThread.Abort();
+                listenThread = null;
+                server.form = null;
+            }
+            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
+            formEnter.Show();
         }
     }
 }

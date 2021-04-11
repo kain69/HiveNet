@@ -39,6 +39,7 @@ namespace WinForms.Client
         {
             try
             {
+                form.cmbBoxEnabled = false;
                 var t = client.Connected;
                 client.Connect(address, port); //подключение клиента
                 stream = client.GetStream(); // получаем поток
@@ -60,6 +61,7 @@ namespace WinForms.Client
             {
                 form.ErrorText = ex.Message;
                 form.ErrorColor = Color.Red;
+                form.cmbBoxEnabled = true;
                 //throw new Exception(ex.Message);
             }
         }
@@ -80,7 +82,7 @@ namespace WinForms.Client
                 try
                 {
                     if (!client.Connected)
-                        throw new Exception("Ошибка: подключение прервано");
+                        throw new Exception();
                     byte[] data = new byte[64]; // буфер для получаемых данных
                     StringBuilder builder = new StringBuilder();
                     int bytes = 0;
@@ -102,6 +104,8 @@ namespace WinForms.Client
                     {
                         form.ErrorText = "Ошибка: подключение прервано";
                         form.ErrorColor = Color.Red;
+                        form.Status = "Disconnected";
+                        form.cmbBoxEnabled = true;
                     }
                     Disconnect();
                     break;

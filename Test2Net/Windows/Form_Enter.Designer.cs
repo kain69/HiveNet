@@ -48,6 +48,8 @@
             // 
             // btnMachine
             // 
+            this.btnMachine.BackgroundImage = global::Test2Net.Properties.Resources.machine;
+            this.btnMachine.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnMachine.Location = new System.Drawing.Point(29, 162);
             this.btnMachine.Name = "btnMachine";
             this.btnMachine.Size = new System.Drawing.Size(130, 130);
@@ -57,6 +59,8 @@
             // 
             // btnServer
             // 
+            this.btnServer.BackgroundImage = global::Test2Net.Properties.Resources.server;
+            this.btnServer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnServer.Location = new System.Drawing.Point(163, 162);
             this.btnServer.Name = "btnServer";
             this.btnServer.Size = new System.Drawing.Size(133, 130);

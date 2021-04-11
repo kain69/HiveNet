@@ -32,6 +32,11 @@ namespace WinForms.Windows
             set => lblError?.Invoke(new Delegate((s) => lblError.ForeColor = value), "newText");
         }
 
+        public bool cmbBoxEnabled
+        {
+            set => cmbbxName?.Invoke(new Delegate((s) => cmbbxName.Enabled = value), "newText");
+        }
+
         public string Status
         {
             get => lblStatusUI.Text;
@@ -67,7 +72,9 @@ namespace WinForms.Windows
             }
             // Блокировка повторного подключения
             if (client?.client.Connected == true)
+            {
                 return;
+            }
             // Подключение при разрыве
             else
                 client.Connect();
