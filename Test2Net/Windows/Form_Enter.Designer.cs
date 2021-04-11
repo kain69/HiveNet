@@ -33,6 +33,9 @@
             this.btnServer = new System.Windows.Forms.Button();
             this.lblMachine = new System.Windows.Forms.Label();
             this.lblServer = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.labelError = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblChoice
@@ -86,12 +89,41 @@
             this.lblServer.Text = "Сервер";
             this.lblServer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(29, 323);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(20, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "IP:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(55, 320);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(93, 20);
+            this.textBox1.TabIndex = 6;
+            this.textBox1.Text = "62.16.41.195";
+            // 
+            // labelError
+            // 
+            this.labelError.AutoSize = true;
+            this.labelError.Location = new System.Drawing.Point(155, 323);
+            this.labelError.Name = "labelError";
+            this.labelError.Size = new System.Drawing.Size(0, 13);
+            this.labelError.TabIndex = 7;
+            // 
             // Form_Enter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.ClientSize = new System.Drawing.Size(331, 338);
+            this.ClientSize = new System.Drawing.Size(331, 345);
+            this.Controls.Add(this.labelError);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.lblServer);
             this.Controls.Add(this.lblMachine);
             this.Controls.Add(this.btnServer);
@@ -102,6 +134,7 @@
             this.Text = "Form_Enter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Enter_FormClosing);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -112,5 +145,8 @@
         private System.Windows.Forms.Button btnServer;
         private System.Windows.Forms.Label lblMachine;
         private System.Windows.Forms.Label lblServer;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label labelError;
     }
 }

@@ -90,25 +90,33 @@ namespace WinForms.Windows
         private void btnStart1_Click(object sender, EventArgs e)
         {
             if (server != null && server.clients.Count >= 1)
-                server.clients[0].IsStarted = true;
+                foreach (var client in server.clients)
+                    if (client.Id == 0)
+                        client.IsStarted = true;
         }
 
         private void btnStart2_Click(object sender, EventArgs e)
         {
-            if (server.clients.Count >= 2)
-                server.clients[1].IsStarted = true;
+            if (server != null && server.clients.Count >= 2)
+                foreach (var client in server.clients)
+                    if (client.Id == 1)
+                        client.IsStarted = true;
         }
 
         private void btnStart3_Click(object sender, EventArgs e)
         {
-            if (server.clients.Count >= 3)
-                server.clients[2].IsStarted = true;
+            if (server != null && server.clients.Count >= 3)
+                foreach (var client in server.clients)
+                    if (client.Id == 2)
+                        client.IsStarted = true;
         }
 
         private void btnStart4_Click(object sender, EventArgs e)
         {
-            if (server.clients.Count >= 4)
-                server.clients[3].IsStarted = true;
+            if (server != null && server.clients.Count >= 4)
+                foreach (var client in server.clients)
+                    if (client.Id == 3)
+                        client.IsStarted = true;
         }
 
         private void Form_Server_FormClosing(object sender, FormClosingEventArgs e)

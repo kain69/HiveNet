@@ -18,7 +18,7 @@ namespace WinForms.Client
         private const int port = 8005;
         public int Port { get { return port; } }
         // Адресс
-        private const string address = "127.0.0.1";
+        private string address;
         public string Address { get { return address; } }
 
         // Поток сообщений и TCP Client
@@ -30,8 +30,9 @@ namespace WinForms.Client
         // Форма
         public Form_Client form { get; set; }
 
-        public ClientObject(Form_Client form)
+        public ClientObject(Form_Client form, string ip)
         {
+            address = ip;
             client = new TcpClient();
             this.form = form;
             userName = form.UserName; 
