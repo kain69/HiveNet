@@ -62,15 +62,16 @@
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.btnServerStop);
             this.panel1.Controls.Add(this.btnServStart);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(218, 635);
+            this.panel1.Size = new System.Drawing.Size(218, 546);
             this.panel1.TabIndex = 0;
             // 
             // btnServerStop
@@ -106,16 +107,17 @@
             // 
             // flowLayoutPanel1
             // 
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.flowLayoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.flowLayoutPanel1.Controls.Add(this.panelWork1);
             this.flowLayoutPanel1.Controls.Add(this.panelWork2);
             this.flowLayoutPanel1.Controls.Add(this.panelWork3);
             this.flowLayoutPanel1.Controls.Add(this.panelWork4);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(218, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(834, 635);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(834, 546);
             this.flowLayoutPanel1.TabIndex = 1;
             // 
             // panelWork1
@@ -284,18 +286,18 @@
             // 
             // panel2
             // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.panel2.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.panel2.Controls.Add(this.lblStatusLog);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(218, 607);
+            this.panel2.Location = new System.Drawing.Point(218, 518);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(834, 28);
             this.panel2.TabIndex = 2;
             // 
             // lblStatusLog
             // 
+            this.lblStatusLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblStatusLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblStatusLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStatusLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.lblStatusLog.Location = new System.Drawing.Point(0, 0);
             this.lblStatusLog.Name = "lblStatusLog";
@@ -308,7 +310,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1052, 635);
+            this.ClientSize = new System.Drawing.Size(1052, 546);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.panel1);

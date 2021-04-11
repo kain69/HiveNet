@@ -10,13 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinForms.Server;
 
-//TODO: Сделать блокировку смены имени, если подключен
-//TODO: Сделать что-то с текстом "ошибка" в клиенте
 //TODO: Сделать возможность отключения станка из диспетчера
 //TODO: Сделать динамическое создание форм станков
-//TODO: Добавить картинки на стартовое окно
-//TODO: Добавить статус у каждого станка
-//TODO: Подчищать все хвосты при выходе на стартовое окно
 
 namespace WinForms.Windows
 {
@@ -46,23 +41,17 @@ namespace WinForms.Windows
         public string Status
         {
             get => lblStatusLog.Text;
-            set => lblStatusLog.Invoke(new Delegate((s) => lblStatusLog.Text = value), "newText");
+            set => lblStatusLog?.Invoke(new Delegate((s) => lblStatusLog.Text = value), "newText");
         }
 
         public void Names(int id, string name)
         {
-            names[id].Invoke(new Delegate((s) => names[id].Text = name), "newText");
+            names[id]?.Invoke(new Delegate((s) => names[id].Text = name), "newText");
         }
 
         public void Pbars(int id, int value)
         {
-            pbars[id].Invoke(new Delegate((s) => pbars[id].Value = value), "newText");
-        }
-
-        private void Form_Server_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
-            formEnter.Show();
+            pbars[id]?.Invoke(new Delegate((s) => pbars[id].Value = value), "newText");
         }
 
         private void btnServStart_Click(object sender, EventArgs e)
@@ -86,36 +75,53 @@ namespace WinForms.Windows
 
         private void btnServerStop_Click(object sender, EventArgs e)
         {
+            lblStatusLog.Hide();
             if (server != null) { 
                 server.Disconnect();
                 listenThread.Abort();
                 listenThread = null;
                 server = null;
             }
+            Thread.Sleep(40);
+            Status = "Сервер остановлен.";
+            lblStatusLog.Show();
         }
 
         private void btnStart1_Click(object sender, EventArgs e)
         {
             if (server != null && server.clients.Count >= 1)
-                server.clients[0].Flag = true;
+                server.clients[0].IsStarted = true;
         }
 
         private void btnStart2_Click(object sender, EventArgs e)
         {
             if (server.clients.Count >= 2)
-                server.clients[1].Flag = true;
+                server.clients[1].IsStarted = true;
         }
 
         private void btnStart3_Click(object sender, EventArgs e)
         {
             if (server.clients.Count >= 3)
-                server.clients[2].Flag = true;
+                server.clients[2].IsStarted = true;
         }
 
         private void btnStart4_Click(object sender, EventArgs e)
         {
             if (server.clients.Count >= 4)
-                server.clients[3].Flag = true;
+                server.clients[3].IsStarted = true;
+        }
+
+        private void Form_Server_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (server != null)
+            {
+                server.Disconnect();
+                listenThread.Abort();
+                listenThread = null;
+                server.form = null;
+            }
+            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
+            formEnter.Show();
         }
     }
 }
