@@ -8,10 +8,12 @@ namespace WinForms.Windows
     public partial class Form_Client : Form
     {
         public ClientObject client;
+        private string ip;
 
-        public Form_Client()
+        public Form_Client(string ip)
         {
             InitializeComponent();
+            this.ip = ip;
         }
 
         delegate void Delegate(object value);
@@ -67,7 +69,7 @@ namespace WinForms.Windows
             // Первое подключение
             if (client == null)
             {
-                client = new ClientObject(this);
+                client = new ClientObject(this, ip);
                 client.Connect();
             }
             // Блокировка повторного подключения
@@ -77,7 +79,7 @@ namespace WinForms.Windows
             }
             if(client?.client.Connected == false)
             {
-                client = new ClientObject(this);
+                client = new ClientObject(this, ip);
                 client.Connect();
             }
             // Подключение при разрыве

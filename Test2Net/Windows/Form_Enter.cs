@@ -29,9 +29,30 @@ namespace WinForms.Windows
 
         private void btnMachine_Click(object sender, EventArgs e)
         {
-            formClient = new Form_Client();
-            formClient.Show();
-            this.Hide();
+            var test = textBox1.Text.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            if (test.Length == 4)
+            {
+                foreach (var word in test)
+                {
+                    if (int.TryParse(word, out _))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        labelError.Text = "Неправильный IP";
+                        return;
+                    }
+                }
+                formClient = new Form_Client(textBox1.Text);
+                formClient.Show();
+                this.Hide();
+                labelError.Text = "";
+                return;
+            }
+            labelError.Text = "Неправильный IP";
+            return;
+
         }
 
         private void Form_Enter_FormClosing(object sender, FormClosingEventArgs e)
