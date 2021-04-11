@@ -66,7 +66,6 @@ namespace WinForms.Server
             }
             catch (Exception ex)
             {
-                form.Status = ex.Message;
                 Disconnect();
             }
         }

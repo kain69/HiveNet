@@ -89,6 +89,7 @@ namespace WinForms.Windows
         {
             if (client != null)
             {
+                client.receiveThread.Abort();
                 client.Disconnect();
                 client.form = null;
             }

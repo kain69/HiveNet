@@ -18,13 +18,25 @@ namespace WinForms.Server
         TcpClient client;
         ServerObject server; // объект сервера
 
+        bool BadConnectionFlag = false;
+        string message2;
+        Thread check;
+
         Form_Server form;
 
         public bool IsStarted { get; set; } = false;
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject, Form_Server form)
         {
-            Id = serverObject.clients.Count;
+            int j = 0;
+            for (int i = 0; i < serverObject.clients.Count; i++)
+            {
+                if (serverObject.clients[i].Id > j)
+                    continue;
+                if (serverObject.clients[i].Id == j)
+                    j++;
+            }
+            Id = j;
             client = tcpClient;
             server = serverObject;
             // Добавить в список клиентов себя
@@ -39,27 +51,34 @@ namespace WinForms.Server
             {
                 form.Status = "Кто-то подключился";
                 Stream = client.GetStream();
+
                 // получаем имя пользователя
                 string message = GetMessage();
                 userName = message;
 
                 form.Names(Id, message);
 
-                while (true) { 
-
-                    while (!IsStarted)
+                while (true) {
+                    try
                     {
-                        try
+                        check = new Thread(new ParameterizedThreadStart(GetMessageY));
+                        check.Start();
+                        while (!IsStarted)
                         {
-                            GetMessage();
+                            if (BadConnectionFlag)
+                            {
+                                Close();
+                                throw new Exception();
+                            }
+                            Thread.Sleep(100);    
                         }
-                        catch
-                        {
-                            throw new Exception($"Ошибка: Подключение у клиента {userName} разорвано.");
-                        }
-                            
+                        IsStarted = false;
+                        BadConnectionFlag = false;
                     }
-                    IsStarted = false;
+                    catch
+                    {
+                        throw new Exception($"Ошибка: Подключение у клиента {userName} разорвано.");
+                    }
                     
                     message = "Start";
                     byte[] data = Encoding.UTF8.GetBytes(message);
@@ -79,14 +98,20 @@ namespace WinForms.Server
                             value = 90;
                             try
                             {
-                                message = GetMessage();
-                                if (message == "Complete")
+                                //message = GetMessage();
+                                if (message2 == "Complete")
                                     break;
+                                if (BadConnectionFlag)
+                                {
+                                    Close();
+                                    form.Pbars(Id, 0);
+                                    throw new Exception($"Ошибка: Подключение у клиента {userName} разорвано.");
+                                }
                             }
                             catch (Exception ex)
                             {
                                 form.Status = ex.Message;
-                                //throw new Exception(ex.Message);
+                                throw new Exception(ex.Message);
                             }
                         }
                         form.Pbars(Id, value);
@@ -128,6 +153,30 @@ namespace WinForms.Server
                 return null;
             }
             
+        }
+
+        // чтение входящего сообщения и преобразование в строку
+        private void GetMessageY(object mess)
+        {
+            try 
+            { 
+                byte[] data = new byte[client.ReceiveBufferSize];
+                int bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
+                if (bytes > 0)
+                {
+                    // Строка, содержащая ответ от сервера
+                    mess = Encoding.UTF8.GetString(data, 0, bytes);
+                    message2 = (string)mess;
+                }
+                else
+                {
+                    BadConnectionFlag = true;
+                }
+            }
+            catch
+            {
+                BadConnectionFlag = true;
+            }
         }
 
         // закрытие подключения
