@@ -75,6 +75,11 @@ namespace WinForms.Windows
             {
                 return;
             }
+            if(client?.client.Connected == false)
+            {
+                client = new ClientObject(this);
+                client.Connect();
+            }
             // Подключение при разрыве
             else
                 client.Connect();

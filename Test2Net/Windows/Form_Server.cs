@@ -45,17 +45,17 @@ namespace WinForms.Windows
         public string Status
         {
             get => lblStatusLog.Text;
-            set => lblStatusLog.Invoke(new Delegate((s) => lblStatusLog.Text = value), "newText");
+            set => lblStatusLog?.Invoke(new Delegate((s) => lblStatusLog.Text = value), "newText");
         }
 
         public void Names(int id, string name)
         {
-            names[id].Invoke(new Delegate((s) => names[id].Text = name), "newText");
+            names[id]?.Invoke(new Delegate((s) => names[id].Text = name), "newText");
         }
 
         public void Pbars(int id, int value)
         {
-            pbars[id].Invoke(new Delegate((s) => pbars[id].Value = value), "newText");
+            pbars[id]?.Invoke(new Delegate((s) => pbars[id].Value = value), "newText");
         }
 
         private void btnServStart_Click(object sender, EventArgs e)

@@ -25,6 +25,8 @@ namespace WinForms.Client
         public TcpClient client { get; private set; }
         NetworkStream stream;
 
+        public Thread receiveThread;
+
         // Форма
         public Form_Client form { get; set; }
 
@@ -47,11 +49,11 @@ namespace WinForms.Client
                 form.Status = "Connected";
 
                 string message = userName;
-                byte[] data = Encoding.Unicode.GetBytes(message);
+                byte[] data = Encoding.UTF8.GetBytes(message);
                 stream.Write(data, 0, data.Length);
 
                 // запускаем новый поток для получения данных
-                Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
+                receiveThread = new Thread(new ThreadStart(ReceiveMessage));
                 receiveThread.Start(); //старт потока
 
                 form.ErrorText = "Хорошо!";
@@ -70,7 +72,7 @@ namespace WinForms.Client
         void SendMessage()
         {
             string message = "Complete";
-            byte[] data = Encoding.Unicode.GetBytes(message);
+            byte[] data = Encoding.UTF8.GetBytes(message);
             stream.Write(data, 0, data.Length);
         }
         // получение сообщений
@@ -83,17 +85,17 @@ namespace WinForms.Client
                 {
                     if (!client.Connected)
                         throw new Exception();
-                    byte[] data = new byte[64]; // буфер для получаемых данных
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0;
-                    do
+                    byte[] data = new byte[client.ReceiveBufferSize];
+                    int bytes = stream.Read(data, 0, client.ReceiveBufferSize);
+                    if (bytes > 0)
                     {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        // Строка, содержащая ответ от сервера
+                        message = Encoding.UTF8.GetString(data, 0, bytes);
                     }
-                    while (stream.DataAvailable);
-
-                    message = builder.ToString();
+                    else
+                    {
+                        Disconnect();
+                    }
 
                     form.ErrorText = "Хорошо!";
                     form.ErrorColor = Color.Green;
@@ -123,8 +125,8 @@ namespace WinForms.Client
                 stream.Close();//отключение потока
             if (client != null)
             {
-                
                 client.Close();//отключение клиента
+                receiveThread.Abort();
             }
 
         }

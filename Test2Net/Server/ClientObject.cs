@@ -54,7 +54,7 @@ namespace WinForms.Server
                     IsStarted = false;
                     
                     message = "Start";
-                    byte[] data = Encoding.Unicode.GetBytes(message);
+                    byte[] data = Encoding.UTF8.GetBytes(message);
                 
                     Stream.Write(data, 0, data.Length); //Работай!
 
@@ -104,19 +104,21 @@ namespace WinForms.Server
         // чтение входящего сообщения и преобразование в строку
         private string GetMessage()
         {
-            byte[] data = new byte[64]; // буфер для получаемых данных
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            do
+            byte[] data = new byte[client.ReceiveBufferSize];
+            int bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
+            if(bytes > 0)
             {
-                bytes = Stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                // Строка, содержащая ответ от сервера
+                string message = Encoding.UTF8.GetString(data, 0, bytes);
+
+                return message;
             }
-            while (Stream.DataAvailable);
-
-            string message = builder.ToString();
-
-            return message;
+            else
+            {
+                Close();
+                return null;
+            }
+            
         }
 
         // закрытие подключения
