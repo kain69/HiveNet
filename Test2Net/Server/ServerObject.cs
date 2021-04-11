@@ -16,7 +16,8 @@ namespace WinForms.Server
 
         public List<ClientObject> clients = new List<ClientObject>(); // все подключения
 
-        Form_Server form;
+        public Form_Server form;
+        Thread clientThread;
 
         public ServerObject(Form_Server form)
         {
@@ -53,12 +54,14 @@ namespace WinForms.Server
                     TcpClient tcpClient = tcpListener.AcceptTcpClient();
 
                     ClientObject clientObject = new ClientObject(tcpClient, this, form);
-                    Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
+                    clientThread = new Thread(new ThreadStart(clientObject.Process));
+                    //clientThread.IsBackground = true;
                     clientThread.Start();
                 }
             }
             catch (SocketException ex) when (ex.ErrorCode == 10004)
             {
+                //clientThread.Abort();
                 return;
             }
             catch (Exception ex)
@@ -71,7 +74,6 @@ namespace WinForms.Server
         // отключение всех клиентов
         protected internal void Disconnect()
         {
-            form.Status = "Сервер остановлен.";
             tcpListener.Stop(); //остановка сервера
 
             for (int i = 0; i < clients.Count; i++)

@@ -6,25 +6,29 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WinForms.Windows;
+using System.Drawing;
 
 namespace WinForms.Client
 {
     public class ClientObject
     {
+        public bool IsConnect { get; private set; } = false;
         public string userName { get; set; }
         // Порт
         private const int port = 8005;
         public int Port { get { return port; } }
         // Адресс
-        private const string address = "62.16.41.195";
+        private const string address = "127.0.0.1";
         public string Address { get { return address; } }
 
         // Поток сообщений и TCP Client
-        TcpClient client;
+        public TcpClient client { get; private set; }
         NetworkStream stream;
 
+        public Thread receiveThread;
+
         // Форма
-        Form_Client form;
+        public Form_Client form { get; set; }
 
         public ClientObject(Form_Client form)
         {
@@ -35,25 +39,31 @@ namespace WinForms.Client
 
         public void Connect()
         {
-            
             try
             {
+                form.cmbBoxEnabled = false;
+                var t = client.Connected;
                 client.Connect(address, port); //подключение клиента
                 stream = client.GetStream(); // получаем поток
 
                 form.Status = "Connected";
 
                 string message = userName;
-                byte[] data = Encoding.Unicode.GetBytes(message);
+                byte[] data = Encoding.UTF8.GetBytes(message);
                 stream.Write(data, 0, data.Length);
 
                 // запускаем новый поток для получения данных
-                Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
+                receiveThread = new Thread(new ThreadStart(ReceiveMessage));
                 receiveThread.Start(); //старт потока
+
+                form.ErrorText = "Хорошо!";
+                form.ErrorColor = Color.Green;
             }
             catch (Exception ex)
             {
-                form.Error = ex.Message;
+                form.ErrorText = ex.Message;
+                form.ErrorColor = Color.Red;
+                form.cmbBoxEnabled = true;
                 //throw new Exception(ex.Message);
             }
         }
@@ -62,7 +72,7 @@ namespace WinForms.Client
         void SendMessage()
         {
             string message = "Complete";
-            byte[] data = Encoding.Unicode.GetBytes(message);
+            byte[] data = Encoding.UTF8.GetBytes(message);
             stream.Write(data, 0, data.Length);
         }
         // получение сообщений
@@ -73,23 +83,34 @@ namespace WinForms.Client
                 string message = null;
                 try
                 {
-                    byte[] data = new byte[64]; // буфер для получаемых данных
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0;
-                    do
+                    if (!client.Connected)
+                        throw new Exception();
+                    byte[] data = new byte[client.ReceiveBufferSize];
+                    int bytes = stream.Read(data, 0, client.ReceiveBufferSize);
+                    if (bytes > 0)
                     {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        // Строка, содержащая ответ от сервера
+                        message = Encoding.UTF8.GetString(data, 0, bytes);
                     }
-                    while (stream.DataAvailable);
+                    else
+                    {
+                        Disconnect();
+                    }
 
-                    message = builder.ToString();
+                    form.ErrorText = "Хорошо!";
+                    form.ErrorColor = Color.Green;
                 }
-                catch (Exception ex)
+                catch
                 {
-                    form.Error = "Ошибка: подключение прервано";
+                    if (form != null)
+                    {
+                        form.ErrorText = "Ошибка: подключение прервано";
+                        form.ErrorColor = Color.Red;
+                        form.Status = "Disconnected";
+                        form.cmbBoxEnabled = true;
+                    }
                     Disconnect();
-                    throw new Exception(ex.Message);
+                    break;
                 }
                 if (message == "Start")
                 {
@@ -98,12 +119,16 @@ namespace WinForms.Client
             }
         }
 
-        void Disconnect()
+        public void Disconnect()
         {
             if (stream != null)
                 stream.Close();//отключение потока
             if (client != null)
+            {
                 client.Close();//отключение клиента
+                //receiveThread.Abort();
+            }
+
         }
 
         void Working()

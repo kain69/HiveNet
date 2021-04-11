@@ -61,7 +61,9 @@
             this.cmbbxName.FormattingEnabled = true;
             this.cmbbxName.Items.AddRange(new object[] {
             "R2D2",
-            "Станок Василий"});
+            "Станок Василий",
+            "Валли",
+            "Мэтр"});
             this.cmbbxName.Location = new System.Drawing.Point(94, 12);
             this.cmbbxName.Name = "cmbbxName";
             this.cmbbxName.Size = new System.Drawing.Size(228, 21);
@@ -72,11 +74,12 @@
             this.lblError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblError.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblError.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblError.ForeColor = System.Drawing.Color.Green;
             this.lblError.Location = new System.Drawing.Point(0, 136);
             this.lblError.Name = "lblError";
             this.lblError.Size = new System.Drawing.Size(334, 27);
             this.lblError.TabIndex = 7;
-            this.lblError.Text = "Ошибка";
+            this.lblError.Text = "Хорошо!";
             this.lblError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pbar
@@ -139,9 +142,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(334, 163);
             this.Controls.Add(this.panel1);
+            this.Location = new System.Drawing.Point(500, 250);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form_Client";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Client_FormClosing);
             this.panel1.ResumeLayout(false);

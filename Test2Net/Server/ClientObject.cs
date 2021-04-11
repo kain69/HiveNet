@@ -20,7 +20,7 @@ namespace WinForms.Server
 
         Form_Server form;
 
-        public bool Flag { get; set; } = false;
+        public bool IsStarted { get; set; } = false;
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject, Form_Server form)
         {
@@ -47,14 +47,22 @@ namespace WinForms.Server
 
                 while (true) { 
 
-                    while (!Flag)
+                    while (!IsStarted)
                     {
-                        Thread.Sleep(500);
+                        try
+                        {
+                            GetMessage();
+                        }
+                        catch
+                        {
+                            throw new Exception($"Ошибка: Подключение у клиента {userName} разорвано.");
+                        }
+                            
                     }
-                    Flag = false;
-
+                    IsStarted = false;
+                    
                     message = "Start";
-                    byte[] data = Encoding.Unicode.GetBytes(message);
+                    byte[] data = Encoding.UTF8.GetBytes(message);
                 
                     Stream.Write(data, 0, data.Length); //Работай!
 
@@ -63,8 +71,12 @@ namespace WinForms.Server
                     while (true)
                     {
                     
-                        if (value >= 80)
+                        Thread.Sleep(1000);
+
+                        value += 10;
+                        if (value >= 90)
                         {
+                            value = 90;
                             try
                             {
                                 message = GetMessage();
@@ -74,13 +86,9 @@ namespace WinForms.Server
                             catch (Exception ex)
                             {
                                 form.Status = ex.Message;
-                                throw new Exception(ex.Message);
+                                //throw new Exception(ex.Message);
                             }
-                            Thread.Sleep(100);
-                            continue;
                         }
-                        Thread.Sleep(1000);
-                        value += 10;
                         form.Pbars(Id, value);
                     }
                     form.Pbars(Id, 100);
@@ -91,32 +99,35 @@ namespace WinForms.Server
             catch (Exception ex)
             {
                 form.Status = ex.Message;
-                throw new Exception(ex.Message);
+                form.Names(Id, "Not Connected");
+                //throw new Exception(ex.Message);
             }
-            //finally
-            //{
-            //    // в случае выхода из цикла закрываем ресурсы
-            //    server.RemoveConnection(this.Id);
-            //    Close();
-            //}
+            finally
+            {
+                // в случае выхода из цикла закрываем ресурсы
+                server.RemoveConnection(this.Id);
+                Close();
+            }
         }
 
         // чтение входящего сообщения и преобразование в строку
         private string GetMessage()
         {
-            byte[] data = new byte[64]; // буфер для получаемых данных
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            do
+            byte[] data = new byte[client.ReceiveBufferSize];
+            int bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
+            if(bytes > 0)
             {
-                bytes = Stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                // Строка, содержащая ответ от сервера
+                string message = Encoding.UTF8.GetString(data, 0, bytes);
+
+                return message;
             }
-            while (Stream.DataAvailable);
-
-            string message = builder.ToString();
-
-            return message;
+            else
+            {
+                Close();
+                return null;
+            }
+            
         }
 
         // закрытие подключения
@@ -126,6 +137,7 @@ namespace WinForms.Server
                 Stream.Close();
             if (client != null)
                 client.Close();
+
         }
     }
 }
