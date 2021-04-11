@@ -49,7 +49,15 @@ namespace WinForms.Server
 
                     while (!IsStarted)
                     {
-                        Thread.Sleep(500);
+                        try
+                        {
+                            GetMessage();
+                        }
+                        catch
+                        {
+                            throw new Exception($"Ошибка: Подключение у клиента {userName} разорвано.");
+                        }
+                            
                     }
                     IsStarted = false;
                     
@@ -91,6 +99,7 @@ namespace WinForms.Server
             catch (Exception ex)
             {
                 form.Status = ex.Message;
+                form.Names(Id, "Not Connected");
                 //throw new Exception(ex.Message);
             }
             finally
@@ -128,6 +137,7 @@ namespace WinForms.Server
                 Stream.Close();
             if (client != null)
                 client.Close();
+
         }
     }
 }

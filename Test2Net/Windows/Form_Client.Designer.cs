@@ -51,7 +51,7 @@
             this.panel1.Controls.Add(this.lblName);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(334, 163);
             this.panel1.TabIndex = 0;
@@ -61,7 +61,9 @@
             this.cmbbxName.FormattingEnabled = true;
             this.cmbbxName.Items.AddRange(new object[] {
             "R2D2",
-            "Станок Василий"});
+            "Станок Василий",
+            "Валли",
+            "Мэтр"});
             this.cmbbxName.Location = new System.Drawing.Point(94, 12);
             this.cmbbxName.Name = "cmbbxName";
             this.cmbbxName.Size = new System.Drawing.Size(228, 21);
@@ -83,7 +85,7 @@
             // pbar
             // 
             this.pbar.Location = new System.Drawing.Point(11, 95);
-            this.pbar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pbar.Margin = new System.Windows.Forms.Padding(2);
             this.pbar.Name = "pbar";
             this.pbar.Size = new System.Drawing.Size(312, 32);
             this.pbar.TabIndex = 4;
@@ -92,7 +94,7 @@
             // 
             this.btnConnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.btnConnect.Location = new System.Drawing.Point(222, 41);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnConnect.Margin = new System.Windows.Forms.Padding(2);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(101, 36);
             this.btnConnect.TabIndex = 3;
@@ -141,7 +143,7 @@
             this.ClientSize = new System.Drawing.Size(334, 163);
             this.Controls.Add(this.panel1);
             this.Location = new System.Drawing.Point(500, 250);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form_Client";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form Client";

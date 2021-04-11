@@ -74,7 +74,6 @@ namespace WinForms.Server
         // отключение всех клиентов
         protected internal void Disconnect()
         {
-            form.Status = "Сервер остановлен.";
             tcpListener.Stop(); //остановка сервера
 
             for (int i = 0; i < clients.Count; i++)

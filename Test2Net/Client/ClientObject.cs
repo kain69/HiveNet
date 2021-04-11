@@ -126,7 +126,7 @@ namespace WinForms.Client
             if (client != null)
             {
                 client.Close();//отключение клиента
-                receiveThread.Abort();
+                //receiveThread.Abort();
             }
 
         }

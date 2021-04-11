@@ -79,12 +79,16 @@ namespace WinForms.Windows
 
         private void btnServerStop_Click(object sender, EventArgs e)
         {
+            lblStatusLog.Hide();
             if (server != null) { 
                 server.Disconnect();
                 listenThread.Abort();
                 listenThread = null;
                 server = null;
             }
+            Thread.Sleep(40);
+            Status = "Сервер остановлен.";
+            lblStatusLog.Show();
         }
 
         private void btnStart1_Click(object sender, EventArgs e)
