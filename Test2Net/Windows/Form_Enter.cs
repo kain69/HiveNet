@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinForms.Windows
 {
     public partial class Form_Enter : Form
     {
-        Form_Server formServer;
-        Form_Client formClient;
+        private Form_Server formServer;
+        private Form_Client formClient;
 
         public Form_Enter()
         {

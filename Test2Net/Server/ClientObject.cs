@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using WinForms.Server;
 using WinForms.Windows;
 
 namespace WinForms.Server
@@ -13,27 +9,27 @@ namespace WinForms.Server
     public class ClientObject
     {
         protected internal int Id { get; private set; }
-        protected internal NetworkStream Stream { get; private set; }
-        string userName;
-        TcpClient client;
-        ServerObject server; // объект сервера
+        private NetworkStream Stream { get; set; }
+        private string userName;
+        private readonly TcpClient client;
+        private readonly ServerObject server; // объект сервера
 
-        bool BadConnectionFlag = false;
-        string message2;
-        Thread check;
+        private bool BadConnectionFlag = false;
+        private string message2;
+        private Thread check;
 
-        Form_Server form;
+        private readonly Form_Server form;
 
         public bool IsStarted { get; set; } = false;
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject, Form_Server form)
         {
-            int j = 0;
-            for (int i = 0; i < serverObject.clients.Count; i++)
+            var j = 0;
+            foreach (var t in serverObject.clients)
             {
-                if (serverObject.clients[i].Id > j)
+                if (t.Id > j)
                     continue;
-                if (serverObject.clients[i].Id == j)
+                if (t.Id == j)
                     j++;
             }
             Id = j;
@@ -53,7 +49,7 @@ namespace WinForms.Server
                 Stream = client.GetStream();
 
                 // получаем имя пользователя
-                string message = GetMessage();
+                var message = GetMessage();
                 userName = message;
 
                 form.Names(Id, message);
@@ -81,12 +77,12 @@ namespace WinForms.Server
                     }
                     
                     message = "Start";
-                    byte[] data = Encoding.UTF8.GetBytes(message);
+                    var data = Encoding.UTF8.GetBytes(message);
                 
                     Stream.Write(data, 0, data.Length); //Работай!
 
                     form.Pbars(Id, 0);
-                    int value = 0;
+                    var value = 0;
                     while (true)
                     {
                     
@@ -138,12 +134,12 @@ namespace WinForms.Server
         // чтение входящего сообщения и преобразование в строку
         private string GetMessage()
         {
-            byte[] data = new byte[client.ReceiveBufferSize];
-            int bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
+            var data = new byte[client.ReceiveBufferSize];
+            var bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
             if(bytes > 0)
             {
                 // Строка, содержащая ответ от сервера
-                string message = Encoding.UTF8.GetString(data, 0, bytes);
+                var message = Encoding.UTF8.GetString(data, 0, bytes);
 
                 return message;
             }
@@ -160,8 +156,8 @@ namespace WinForms.Server
         {
             try 
             { 
-                byte[] data = new byte[client.ReceiveBufferSize];
-                int bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
+                var data = new byte[client.ReceiveBufferSize];
+                var bytes = Stream.Read(data, 0, client.ReceiveBufferSize);
                 if (bytes > 0)
                 {
                     // Строка, содержащая ответ от сервера
@@ -182,11 +178,8 @@ namespace WinForms.Server
         // закрытие подключения
         protected internal void Close()
         {
-            if (Stream != null)
-                Stream.Close();
-            if (client != null)
-                client.Close();
-
+            Stream?.Close();
+            client?.Close();
         }
     }
 }

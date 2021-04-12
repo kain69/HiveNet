@@ -8,7 +8,7 @@ namespace WinForms.Windows
     public partial class Form_Client : Form
     {
         public ClientObject client;
-        private string ip;
+        private readonly string ip;
 
         public Form_Client(string ip)
         {
@@ -16,7 +16,7 @@ namespace WinForms.Windows
             this.ip = ip;
         }
 
-        delegate void Delegate(object value);
+        private delegate void Delegate(object value);
 
         public int progress
         {
@@ -45,17 +45,14 @@ namespace WinForms.Windows
             set
             {
                 lblStatusUI?.Invoke(new Delegate((s) => lblStatusUI.Text = (string)value), "newText");
-                if (lblStatusUI.Text == "Connected")
-                    lblStatusUI?.Invoke(new Delegate((s) => lblStatusUI.ForeColor = Color.Green), "newText");
-                else
-                    lblStatusUI?.Invoke(new Delegate((s) => lblStatusUI.ForeColor = Color.Red), "newText");
+                lblStatusUI?.Invoke(
+                    lblStatusUI.Text == "Connected"
+                        ? new Delegate((s) => lblStatusUI.ForeColor = Color.Green)
+                        : new Delegate((s) => lblStatusUI.ForeColor = Color.Red), "newText");
             }
         }
 
-        public string UserName
-        {
-            get => cmbbxName.Text;
-        }
+        public string UserName { get => cmbbxName.Text; set => cmbbxName.Text = value; }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
@@ -72,19 +69,19 @@ namespace WinForms.Windows
                 client = new ClientObject(this, ip);
                 client.Connect();
             }
-            // Блокировка повторного подключения
-            if (client?.client.Connected == true)
+
+            switch (client?.client.Connected)
             {
-                return;
+                // Блокировка повторного подключения
+                case true: return;
+                // Подключение при разрыве
+                case false:
+                    client = new ClientObject(this, ip);
+                    client.Connect();
+                    break;
+                default: client.Connect();
+                    break;
             }
-            if(client?.client.Connected == false)
-            {
-                client = new ClientObject(this, ip);
-                client.Connect();
-            }
-            // Подключение при разрыве
-            else
-                client.Connect();
         }
 
         private void Form_Client_FormClosing(object sender, FormClosingEventArgs e)
@@ -95,8 +92,8 @@ namespace WinForms.Windows
                 client.Disconnect();
                 client.form = null;
             }
-            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
-            formEnter.Show();
+            var formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
+            formEnter?.Show();
         }
     }
 }
