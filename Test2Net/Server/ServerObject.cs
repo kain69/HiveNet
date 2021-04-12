@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using WinForms.Windows;
 
 namespace WinForms.Server
 {
     public class ServerObject
     {
-        static TcpListener tcpListener; // сервер для прослушивания
+        private static TcpListener tcpListener; // сервер для прослушивания
 
-        public List<ClientObject> clients = new List<ClientObject>(); // все подключения
+        public readonly List<ClientObject> clients = new List<ClientObject>(); // все подключения
 
         public Form_Server form;
-        Thread clientThread;
+        private Thread clientThread;
 
         public ServerObject(Form_Server form)
         {
@@ -32,13 +30,13 @@ namespace WinForms.Server
         protected internal void RemoveConnection(int id)
         {
             // получаем по id закрытое подключение
-            ClientObject client = clients.FirstOrDefault(c => c.Id == id);
+            var client = clients.FirstOrDefault(c => c.Id == id);
             // и удаляем его из списка подключений
             if (client != null)
                 clients.Remove(client);
         }
 
-        delegate void Del(string text);
+        private delegate void Del(string text);
 
         // прослушивание входящих подключений
         protected internal void Listen()
@@ -51,9 +49,9 @@ namespace WinForms.Server
 
                 while (true)
                 {
-                    TcpClient tcpClient = tcpListener.AcceptTcpClient();
+                    var tcpClient = tcpListener.AcceptTcpClient();
 
-                    ClientObject clientObject = new ClientObject(tcpClient, this, form);
+                    var clientObject = new ClientObject(tcpClient, this, form);
                     clientThread = new Thread(new ThreadStart(clientObject.Process));
                     //clientThread.IsBackground = true;
                     clientThread.Start();
@@ -64,7 +62,7 @@ namespace WinForms.Server
                 //clientThread.Abort();
                 return;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Disconnect();
             }
@@ -75,9 +73,9 @@ namespace WinForms.Server
         {
             tcpListener.Stop(); //остановка сервера
 
-            for (int i = 0; i < clients.Count; i++)
+            foreach (var t in clients)
             {
-                clients[i].Close(); //отключение клиента
+                t.Close(); //отключение клиента
             }
         }
     }

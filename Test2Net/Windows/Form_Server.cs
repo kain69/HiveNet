@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinForms.Server;
 
@@ -18,10 +12,10 @@ namespace WinForms.Windows
     public partial class Form_Server : Form
     {
         public ServerObject server; // сервер
-        Thread listenThread; // потока для прослушивания
+        private Thread listenThread; // потока для прослушивания
 
-        public List<Label> names = new List<Label>();
-        public List<ProgressBar> pbars = new List<ProgressBar>();
+        public readonly List<Label> names = new List<Label>();
+        public readonly List<ProgressBar> pbars = new List<ProgressBar>();
 
         public Form_Server()
         {
@@ -36,7 +30,7 @@ namespace WinForms.Windows
             pbars.Add(progressBar4);
         }
 
-        delegate void Delegate(string text);
+        private delegate void Delegate(string text);
 
         public string Status
         {
@@ -56,20 +50,18 @@ namespace WinForms.Windows
 
         private void btnServStart_Click(object sender, EventArgs e)
         {
-            if(server == null && listenThread == null)
+            if (server != null || listenThread != null) return;
+            try
             {
-                try
-                {
-                    server = new ServerObject(this);
-                    listenThread = new Thread(new ThreadStart(server.Listen));
-                    listenThread.Start(); //старт потока
-                }
-                catch (Exception ex)
-                {
-                    server.Disconnect();
-                    Status = ex.Message;
-                    throw new Exception(ex.Message);
-                }
+                server = new ServerObject(this);
+                listenThread = new Thread(new ThreadStart(server.Listen));
+                listenThread.Start(); //старт потока
+            }
+            catch (Exception ex)
+            {
+                server?.Disconnect();
+                Status = ex.Message;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -89,34 +81,34 @@ namespace WinForms.Windows
 
         private void btnStart1_Click(object sender, EventArgs e)
         {
-            if (server != null && server.clients.Count >= 1)
-                foreach (var client in server.clients)
-                    if (client.Id == 0)
-                        client.IsStarted = true;
+            if (server == null || server.clients.Count < 1) return;
+            foreach (var client in server.clients)
+                if (client.Id == 0)
+                    client.IsStarted = true;
         }
 
         private void btnStart2_Click(object sender, EventArgs e)
         {
-            if (server != null && server.clients.Count >= 2)
-                foreach (var client in server.clients)
-                    if (client.Id == 1)
-                        client.IsStarted = true;
+            if (server == null || server.clients.Count < 2) return;
+            foreach (var client in server.clients)
+                if (client.Id == 1)
+                    client.IsStarted = true;
         }
 
         private void btnStart3_Click(object sender, EventArgs e)
         {
-            if (server != null && server.clients.Count >= 3)
-                foreach (var client in server.clients)
-                    if (client.Id == 2)
-                        client.IsStarted = true;
+            if (server == null || server.clients.Count < 3) return;
+            foreach (var client in server.clients)
+                if (client.Id == 2)
+                    client.IsStarted = true;
         }
 
         private void btnStart4_Click(object sender, EventArgs e)
         {
-            if (server != null && server.clients.Count >= 4)
-                foreach (var client in server.clients)
-                    if (client.Id == 3)
-                        client.IsStarted = true;
+            if (server == null || server.clients.Count < 4) return;
+            foreach (var client in server.clients)
+                if (client.Id == 3)
+                    client.IsStarted = true;
         }
 
         private void Form_Server_FormClosing(object sender, FormClosingEventArgs e)
@@ -128,8 +120,8 @@ namespace WinForms.Windows
                 listenThread = null;
                 server.form = null;
             }
-            Form_Enter formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
-            formEnter.Show();
+            var formEnter = (Form_Enter)Application.OpenForms["Form_Enter"];
+            formEnter?.Show();
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using WinForms.Windows;
 using System.Drawing;
 
@@ -13,17 +10,26 @@ namespace WinForms.Client
     public class ClientObject
     {
         public bool IsConnect { get; private set; } = false;
-        public string userName { get; set; }
+        private string userName { get; set; }
         // Порт
         private const int port = 8005;
-        public int Port { get { return port; } }
+        public int Port
+        {
+            get => port;
+            set => throw new NotImplementedException();
+        }
+
         // Адресс
-        private string address;
-        public string Address { get { return address; } }
+        private readonly string address;
+        public string Address
+        {
+            get => address;
+            set => throw new NotImplementedException();
+        }
 
         // Поток сообщений и TCP Client
         public TcpClient client { get; private set; }
-        NetworkStream stream;
+        private NetworkStream stream;
 
         public Thread receiveThread;
 
@@ -49,8 +55,8 @@ namespace WinForms.Client
 
                 form.Status = "Connected";
 
-                string message = userName;
-                byte[] data = Encoding.UTF8.GetBytes(message);
+                var message = userName;
+                var data = Encoding.UTF8.GetBytes(message);
                 stream.Write(data, 0, data.Length);
 
                 // запускаем новый поток для получения данных
@@ -70,14 +76,14 @@ namespace WinForms.Client
         }
 
         // отправка сообщений
-        void SendMessage()
+        private void SendMessage()
         {
-            string message = "Complete";
-            byte[] data = Encoding.UTF8.GetBytes(message);
+            var message = "Complete";
+            var data = Encoding.UTF8.GetBytes(message);
             stream.Write(data, 0, data.Length);
         }
         // получение сообщений
-        void ReceiveMessage()
+        private void ReceiveMessage()
         {
             while (true)
             {
@@ -86,8 +92,8 @@ namespace WinForms.Client
                 {
                     if (!client.Connected)
                         throw new Exception();
-                    byte[] data = new byte[client.ReceiveBufferSize];
-                    int bytes = stream.Read(data, 0, client.ReceiveBufferSize);
+                    var data = new byte[client.ReceiveBufferSize];
+                    var bytes = stream.Read(data, 0, client.ReceiveBufferSize);
                     if (bytes > 0)
                     {
                         // Строка, содержащая ответ от сервера
@@ -122,17 +128,12 @@ namespace WinForms.Client
 
         public void Disconnect()
         {
-            if (stream != null)
-                stream.Close();//отключение потока
-            if (client != null)
-            {
-                client.Close();//отключение клиента
-                //receiveThread.Abort();
-            }
-
+            stream?.Close();//отключение потока
+            client?.Close();//отключение клиента
+            //receiveThread.Abort();
         }
 
-        void Working()
+        private void Working()
         {
             while (true)
             {
